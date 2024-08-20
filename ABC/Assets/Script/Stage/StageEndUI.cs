@@ -9,7 +9,8 @@ public class StageEndUI : MonoBehaviour
     public Button nextStageButton; // 다음 스테이지로 넘어가는 버튼
     public Button replayButton_0; // 게임을 다시 시작하는 버튼
     public Button replayButton_1; // 게임을 다시 시작하는 버튼
-    public TextMeshProUGUI scoreText; // 점수를 표시할 텍스트
+    public TextMeshProUGUI scoreText; // 현재 점수를 표시할 텍스트
+    public TextMeshProUGUI highScoreText; // 최고 점수를 표시할 텍스트
 
     void Start()
     {
@@ -23,8 +24,12 @@ public class StageEndUI : MonoBehaviour
         // 타이머 멈춤
         StageManager.Instance.GetTimer().StopTimer();
 
-        // 현재 점수 표시
-        scoreText.text = "Score: " + StageManager.Instance.GetScoreManager().GetScore();
+        // 현재 점수와 최고 점수 표시
+        int currentScore = StageManager.Instance.GetScoreManager().GetScore();
+        int highScore = StageManager.Instance.GetScoreManager().GetHighScore();
+
+        scoreText.text = "Score: " + currentScore;
+        highScoreText.text = "High Score: " + highScore;
 
         if (isFinalStage)
         {

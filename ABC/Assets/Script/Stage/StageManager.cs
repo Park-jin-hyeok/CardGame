@@ -104,6 +104,9 @@ public class StageManager : MonoBehaviour
             // 마지막 스테이지 완료 UI 표시
             if (stageEndUI != null)
             {
+                int timeBonus = Mathf.FloorToInt(stageTimer.GetCurrentTime()) * 100;
+                scoreManager.AddScore(timeBonus);
+
                 stageEndUI.ShowStageEndUI(true);
             }
         }

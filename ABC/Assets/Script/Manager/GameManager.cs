@@ -191,11 +191,15 @@ public struct CardData
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
+    public AudioSource audioSource; // AudioSource 컴포넌트
+    public AudioClip cardFlipSound; // 카드 뒤집기 사운드
+    public AudioClip timerSound;
 
     private List<Card> cardList = new List<Card>();
     private List<Card> flippedCards = new List<Card>();
 
     private StageManager stageManager;
+    private ISoundManager soundManager;
 
     void Start()
     {
@@ -207,6 +211,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // SoundManager 초기화
+        soundManager = new SoundManager(audioSource, cardFlipSound, timerSound);
+
         Card.OnCardClicked += HandleCardClicked;
         MouseInputManager.OnMouseClicked += HandleMouseClick;
 
@@ -215,6 +222,8 @@ public class GameManager : MonoBehaviour
 
     private void SetupStage()
     {
+        soundManager.PlayTimerSound();
+
         int cardCount = stageManager.GetCardCountForStage();
         int rowLength = stageManager.GetRowLengthForStage();
         float cardSpacing = 1.5f;
@@ -276,6 +285,9 @@ public class GameManager : MonoBehaviour
 
         if (!clickedCard.IsFaceUp)
         {
+            // 카드 뒤집기 소리 재생
+            soundManager.PlayCardFlipSound();
+
             clickedCard.FlipCard();
             flippedCards.Add(clickedCard);
         }
@@ -302,17 +314,17 @@ public class GameManager : MonoBehaviour
             Debug.Log("Match!");
             foreach (var card in flippedCards)
             {
-                cardList.Remove(card); // 리스트에서 카드 제거
+                cardList.Remove(card);
                 card.RemoveCard();
             }
 
             flippedCards.Clear();
 
-            // 짝이 맞을 때 점수 추가 (100점)
             StageManager.Instance.AddScore(100);
 
             if (AllCardsMatched())
             {
+                soundManager.StopTimerSound();
                 StageManager.Instance.OnStageComplete();
             }
         }
@@ -324,7 +336,6 @@ public class GameManager : MonoBehaviour
             flippedCards.Clear();
         }
     }
-
 
     private bool AllCardsMatched()
     {
@@ -343,3 +354,4 @@ public class GameManager : MonoBehaviour
         MouseInputManager.OnMouseClicked -= HandleMouseClick;
     }
 }
+
