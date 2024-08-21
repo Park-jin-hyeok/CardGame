@@ -3,13 +3,13 @@ using TMPro;
 
 public class ScoreUI : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText; // TextMeshProUGUI¿¡ ´ëÇÑ ÂüÁ¶
+    public TextMeshProUGUI scoreText; // TextMeshProUGUIì— ëŒ€í•œ ì°¸ì¡°
 
     private IScoreManager scoreManager;
 
     void Start()
     {
-        // StageManagerÀÇ ScoreManager¸¦ ÂüÁ¶
+        // StageManagerì˜ ScoreManagerë¥¼ ì°¸ì¡°
         scoreManager = StageManager.Instance.GetScoreManager();
 
         if (scoreText == null)
@@ -27,6 +27,6 @@ public class ScoreUI : MonoBehaviour
 
     void UpdateScoreText()
     {
-        scoreText.text = "Score: " + scoreManager.GetScore().ToString();
+        scoreText.text = scoreManager.GetScore().ToString();
     }
 }

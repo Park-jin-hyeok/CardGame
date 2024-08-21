@@ -12,7 +12,7 @@ public class StageManager : MonoBehaviour
     private IScoreManager scoreManager;
 
     private StageEndUI stageEndUI;
-    private bool isStageComplete = false; // 스테이지 완료 상태를 확인하기 위한 플래그
+    private bool isStageComplete = false;
 
     void Awake()
     {
@@ -37,7 +37,6 @@ public class StageManager : MonoBehaviour
         stageTimer = new StageTimer();
         scoreManager = new ScoreManager();
 
-        // 두 번째 씬에서도 StageEndUI를 다시 찾아 참조합니다.
         stageEndUI = FindObjectOfType<StageEndUI>();
 
         TransitionToState(stages[0]);
@@ -45,7 +44,6 @@ public class StageManager : MonoBehaviour
 
     void OnLevelWasLoaded(int level)
     {
-        // 씬이 로드될 때마다 StageEndUI를 다시 찾습니다.
         stageEndUI = FindObjectOfType<StageEndUI>();
     }
 
@@ -70,7 +68,7 @@ public class StageManager : MonoBehaviour
         currentState.EnterState(this);
         ResetAndStartTimerForStage(currentState);
 
-        isStageComplete = false; // 새로운 스테이지 시작 시 스테이지 완료 상태를 초기화
+        isStageComplete = false;
 
         if (newState == stages[0])
         {
@@ -80,7 +78,7 @@ public class StageManager : MonoBehaviour
 
     public void OnStageComplete()
     {
-        if (isStageComplete) return; // 스테이지 완료가 이미 처리된 경우 반복 호출 방지
+        if (isStageComplete) return;
 
         isStageComplete = true;
 
@@ -88,11 +86,9 @@ public class StageManager : MonoBehaviour
 
         if (nextStageIndex < stages.Count)
         {
-            // 남은 시간에 따라 추가 점수 계산
             int timeBonus = Mathf.FloorToInt(stageTimer.GetCurrentTime()) * 100;
             scoreManager.AddScore(timeBonus);
 
-            // 스테이지 완료 UI 표시 (마지막 스테이지가 아닌 경우)
             if (stageEndUI != null)
             {
                 stageEndUI.ShowStageEndUI(false);
@@ -101,7 +97,6 @@ public class StageManager : MonoBehaviour
         else
         {
             Debug.Log("All stages completed! Showing final end page.");
-            // 마지막 스테이지 완료 UI 표시
             if (stageEndUI != null)
             {
                 int timeBonus = Mathf.FloorToInt(stageTimer.GetCurrentTime()) * 100;
@@ -129,10 +124,9 @@ public class StageManager : MonoBehaviour
 
     public void ReplayGame()
     {
-        // 게임을 처음부터 다시 시작
         scoreManager.ResetScore();
         TransitionToState(stages[0]);
-        LoadNextScene(0);
+        LoadNextScene(1);
     }
 
     private void LoadNextScene(int sceneIndex)
@@ -151,10 +145,8 @@ public class StageManager : MonoBehaviour
     {
         Debug.Log("Game Over! Showing final end page.");
 
-        // 타이머 멈춤
         stageTimer.StopTimer();
 
-        // 현재 점수를 표시하고 finalEndPage 활성화
         if (stageEndUI != null)
         {
             stageEndUI.ShowStageEndUI(true);

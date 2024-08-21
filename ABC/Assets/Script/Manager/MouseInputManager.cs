@@ -13,7 +13,6 @@ public class MouseInputManager : MonoBehaviour
         {
             Debug.Log("Click by mouse input");
             OnMouseClicked?.Invoke(Input.mousePosition);
-            
         }
     }
 }

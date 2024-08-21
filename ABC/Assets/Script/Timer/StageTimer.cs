@@ -46,5 +46,6 @@ public class StageTimer : ITimer
     {
         Debug.Log("Time's up! Game Over.");
         StageManager.Instance.GameOver();
+
     }
 }

@@ -5,12 +5,14 @@ public class SoundManager : ISoundManager
     private AudioSource audioSource;
     private AudioClip cardFlipSound;
     private AudioClip timerSound;
+    private AudioClip correctSound; 
 
-    public SoundManager(AudioSource source, AudioClip flipSound, AudioClip timerSound)
+    public SoundManager(AudioSource source, AudioClip flipSound, AudioClip timerSound, AudioClip correctSound)
     {
         audioSource = source;
         cardFlipSound = flipSound;
         this.timerSound = timerSound;
+        this.correctSound = correctSound;
     }
 
     public void PlayCardFlipSound()
@@ -26,8 +28,8 @@ public class SoundManager : ISoundManager
         if (audioSource != null && timerSound != null)
         {
             audioSource.clip = timerSound;
-            audioSource.loop = true;  // 타이머 소리는 반복 재생되도록 설정
-            audioSource.Play();       // Play() 호출을 통해 소리 재생 시작
+            audioSource.loop = true;  
+            audioSource.Play();       
         }
     }
 
@@ -36,7 +38,15 @@ public class SoundManager : ISoundManager
         if (audioSource != null && audioSource.isPlaying)
         {
             audioSource.Stop();
-            audioSource.loop = false; // 반복 재생 해제
+            audioSource.loop = false; 
+        }
+    }
+
+    public void PlayCorrectSound()
+    {
+        if (audioSource != null && correctSound != null)
+        {
+            audioSource.PlayOneShot(correctSound);
         }
     }
 }

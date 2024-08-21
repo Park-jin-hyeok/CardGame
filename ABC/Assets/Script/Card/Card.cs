@@ -1,200 +1,13 @@
-/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum Suit
 {
-    Hearts,
-    Diamonds,
-    Clubs,
-    Spades
-}
-
-public abstract class Card : MonoBehaviour
-{
-    public delegate void CardClickedEventHandler(Card clickedCard);
-    public static event CardClickedEventHandler OnCardClicked;
-
-    public static Dictionary<int, List<Vector2>> suitPositionDictionary = new Dictionary<int, List<Vector2>>
-    {
-        { 1, new List<Vector2> { new Vector2(0, 0) } },
-        { 2, new List<Vector2> { new Vector2(0, 0.5f), new Vector2(0, -0.5f) } },
-        { 3, new List<Vector2> { new Vector2(0, 0.7f), new Vector2(0, 0), new Vector2(0, -0.7f) } },
-        { 4, new List<Vector2> { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-0.5f, -0.5f), new Vector2(0.5f, -0.5f) } },
-        { 5, new List<Vector2> { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 0), new Vector2(-0.5f, -0.5f), new Vector2(0.5f, -0.5f) } },
-        { 6, new List<Vector2> { new Vector2(-0.5f, 0.7f), new Vector2(0.5f, 0.7f), new Vector2(-0.5f, 0), new Vector2(0.5f, 0), new Vector2(-0.5f, -0.7f), new Vector2(0.5f, -0.7f) } },
-        { 7, new List<Vector2> { new Vector2(-0.5f, 0.8f), new Vector2(0, 0.8f), new Vector2(0.5f, 0.8f), new Vector2(-0.5f, 0), new Vector2(0.5f, 0), new Vector2(-0.5f, -0.8f), new Vector2(0.5f, -0.8f) } },
-        { 8, new List<Vector2> { new Vector2(-0.5f, 0.8f), new Vector2(0.5f, 0.8f), new Vector2(-0.5f, 0.4f), new Vector2(0.5f, 0.4f), new Vector2(-0.5f, -0.4f), new Vector2(0.5f, -0.4f), new Vector2(-0.5f, -0.8f), new Vector2(0.5f, -0.8f) } },
-        { 9, new List<Vector2> { new Vector2(-0.5f, 0.8f), new Vector2(0, 0.8f), new Vector2(0.5f, 0.8f), new Vector2(-0.5f, 0.4f), new Vector2(0, 0.4f), new Vector2(0.5f, 0.4f), new Vector2(-0.5f, -0.4f), new Vector2(0, -0.4f), new Vector2(0.5f, -0.4f) } },
-        { 10, new List<Vector2> { new Vector2(-0.5f, 0.8f), new Vector2(0, 0.8f), new Vector2(0.5f, 0.8f), new Vector2(-0.5f, 0.4f), new Vector2(0, 0.4f), new Vector2(0.5f, 0.4f), new Vector2(-0.5f, -0.4f), new Vector2(0, -0.4f), new Vector2(0.5f, -0.4f), new Vector2(0, 0) } },
-        { 11, new List<Vector2> { new Vector2(0, 0) } },
-        { 12, new List<Vector2> { new Vector2(0, 0) } },
-        { 13, new List<Vector2> { new Vector2(0, 0) } },
-    };
-
-    public Suit suit { get; protected set; }
-    public int Rank { get; protected set; }
-    public bool IsFaceUp { get; protected set; } // Add a flag for card state
-
-    public abstract void Initialize(Suit suit, int rank);
-
-    private bool isFlipping = false;
-
-    private void OnMouseDown()
-    {
-        OnCardClicked?.Invoke(this);
-    } 
-
-
-    public virtual void FlipCard() // Make flip virtual for potential variations
-    {
-        IsFaceUp = !IsFaceUp;
-        // Update card visuals based on IsFaceUp (show suit/rank or blank)
-    } 
-
-    public GameObject GetSuitPrefab(Suit suit)
-    {
-        switch (suit)
-        {
-            case global::Suit.Hearts:
-                return Resources.Load<GameObject>("HeartPrefab");
-            case global::Suit.Diamonds:
-                return Resources.Load<GameObject>("DiamondPrefab");
-            case global::Suit.Clubs:
-                return Resources.Load<GameObject>("ClubPrefab");
-            case global::Suit.Spades:
-                return Resources.Load<GameObject>("SpadePrefab");
-            default:
-                Debug.LogError("Invalid suit");
-                return null;
-        }
-    }
-}
-
-public class SingleCard : Card
-{
-    private SpriteRenderer spriteRenderer;
-    private List<Vector2> suitPositions; // Dictionary to store suit positions
-
-    public override void Initialize(Suit suit, int rank)
-    {
-        this.suit = suit;
-        this.Rank = rank;
-        this.IsFaceUp = false; // Start cards face down
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        suitPositions = Card.suitPositionDictionary[rank]; // Initialize suit position dictionary
-
-    }
-
-    public override void FlipCard()
-    {
-        base.FlipCard(); // Call base class FlipCard logic
-
-        if (IsFaceUp)
-        {
-            // Load and display card rank image (text or sprite depending on your design)
-            // ... Load and display rank image based on Rank property
-        }
-        else
-        {
-            // Display the blank card asset
-            spriteRenderer.sprite = Resources.Load<Sprite>("BlankCard"); // Assuming your blank card asset is named "BlankCard"
-        }
-    }
-}
-
-
-
-public class StandardCard : Card
-{
-    private float oscillationAmplitude = 0.05f; // Adjust amplitude as needed
-    private float oscillationSpeed = 2f; // Adjust speed as needed
-
-    private SpriteRenderer spriteRenderer;
-    private List<Vector2> suitPositions; // Dictionary to store suit positions 
-
-    private List<GameObject> suitSymbolObjList;
-
-    public override void Initialize(Suit suit, int rank)
-    {
-        suitSymbolObjList = new List<GameObject>();
-        this.suit = suit;
-        this.Rank = rank;
-        this.IsFaceUp = false; // Start cards face down
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        suitPositions = Card.suitPositionDictionary[rank]; // get suit position from dictionary
-    }
-
-    public override void FlipCard()
-    {
-        base.FlipCard(); // Call base class FlipCard logic
-
-        if (IsFaceUp)
-        { 
-
-            foreach (Vector2 suitPos in suitPositions)
-            {
-                
-                
-                // Instantiate the suit symbol at the specified position
-                GameObject suitSymbol = Instantiate(GetSuitPrefab(suit));
-
-                suitSymbol.transform.SetParent(this.gameObject.transform); 
-                suitSymbol.transform.localPosition = suitPos / 2f; // Set position relative to the card  
-                suitSymbol.transform.localScale = 0.1f * Vector3.one; // Ensure correct scaling if needed
-                suitSymbol.tag = "SuitSymbol"; // Tag to identify suit symbols 
-                // add suit symbol  
-                suitSymbolObjList.Add(suitSymbol);
-            }
-        }
-        else
-        {
-            ClearSuitSymbols();
-            // Display the blank card asset
-            // spriteRenderer.sprite = Resources.Load<Sprite>("BlankCard"); // Assuming your blank card asset is named "BlankCard"
-        }
-    }
-
-    public void Update()
-    {
-
-
-        if (IsFaceUp)
-        {
-            for (int i = 0; i < suitPositions.Count; i++) {
-                float offset = Mathf.Sin(Time.time * oscillationSpeed + i) * oscillationAmplitude;
-                suitSymbolObjList[i].transform.localPosition = suitPositions[i]/2 + new Vector2(offset, 0);
-            }
-        }
-    }
-
-    private void ClearSuitSymbols()
-    {
-        // Optionally, remove previously instantiated suit symbols
-        foreach (Transform child in transform)
-        {
-            if (child.CompareTag("SuitSymbol"))
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
-        suitSymbolObjList.Clear();
-    }
-}
-*/
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public enum Suit
-{
-    ��Ʈ,
-    ���̾�,
-    Ŭ�ι�,
-    �����̵�
+    Heart,
+    Diamond,
+    Clover,
+    Spade
 }
 
 public class Card : MonoBehaviour
@@ -207,12 +20,12 @@ public class Card : MonoBehaviour
     public bool IsFaceUp { get; private set; }
 
     private SpriteRenderer spriteRenderer;
-    private GameObject cardFront; // �ո� �̹��� ������Ʈ
-    private GameObject cardBack;  // �޸� �̹��� ������Ʈ
-    private BoxCollider2D boxCollider; // BoxCollider2D ����
+    private GameObject cardFront; // 앞면 이미지 오브젝트
+    private GameObject cardBack;  // 뒷면 이미지 오브젝트
+    private BoxCollider2D boxCollider; // BoxCollider2D 참조
     private bool isFlipping = false;
 
-    public void Initialize(Suit suit, int rank, Vector3 scale) // scale ���ڸ� �߰��մϴ�.
+    public void Initialize(Suit suit, int rank, Vector3 scale, int orderInLayer = 1) // scale 인자를 추가합니다.
     {
         this.Suit = suit;
         this.Rank = rank;
@@ -220,32 +33,43 @@ public class Card : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Load and set the back sprite
         cardBack = new GameObject("CardBack");
         var backRenderer = cardBack.AddComponent<SpriteRenderer>();
         backRenderer.sprite = Resources.Load<Sprite>("Cards/CardBack");
+        backRenderer.sortingOrder = orderInLayer; // Order in Layer 설정
         cardBack.transform.SetParent(this.transform);
         cardBack.transform.localPosition = Vector3.zero;
 
-        // Load and set the front sprite based on suit and rank
         cardFront = new GameObject("CardFront");
         var frontRenderer = cardFront.AddComponent<SpriteRenderer>();
         string cardPath = $"Cards/{suit.ToString() + " "}{rank}";
         frontRenderer.sprite = Resources.Load<Sprite>(cardPath);
+        frontRenderer.sortingOrder = orderInLayer; // Order in Layer 설정
         cardFront.transform.SetParent(this.transform);
         cardFront.transform.localPosition = Vector3.zero;
 
-        cardFront.SetActive(false); // Initially, front is hidden
+        cardFront.SetActive(false); 
 
-        // Set the scale of the card
-        this.transform.localScale = scale;
+        // 카드 크기 키우기 위함
+        this.transform.localScale = new Vector3(-scale.x, scale.y, scale.z); // 좌우 반전
 
-        // Adjust the BoxCollider2D size to compensate for the scaling
+        // 선택되는 범위 넓히기
         boxCollider = GetComponent<BoxCollider2D>();
         if (boxCollider != null)
         {
-            boxCollider.size = new Vector2(boxCollider.size.x / scale.x, boxCollider.size.y / scale.y);
+            boxCollider.size = new Vector2(boxCollider.size.x / scale.x * 2.5f, boxCollider.size.y / scale.y * 2.5f);
         }
+    }
+    public void SetSortingOrder(int order)
+    {
+        SpriteRenderer frontRenderer = cardFront.GetComponent<SpriteRenderer>();
+        SpriteRenderer backRenderer = cardBack.GetComponent<SpriteRenderer>();
+
+        if (frontRenderer != null)
+            frontRenderer.sortingOrder = order;
+
+        if (backRenderer != null)
+            backRenderer.sortingOrder = order;
     }
 
     private void OnMouseDown()
@@ -265,24 +89,55 @@ public class Card : MonoBehaviour
     {
         isFlipping = true;
         float duration = 0.5f; // Flip duration
+        float halfDuration = duration / 2f;
         float time = 0f;
         Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = transform.rotation * Quaternion.Euler(0, 180f, 0);
+        Quaternion midRotation = startRotation * Quaternion.Euler(0, 90f, 0);
+        Quaternion endRotation = startRotation * Quaternion.Euler(0, 180f, 0);
 
-        while (time < duration)
+        // Z축으로 살짝 앞으로 이동
+        if (!IsFaceUp)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 1.5f);
+        }
+
+        // 첫 절반 회전: 카드가 옆면을 향하게 함
+        while (time < halfDuration)
         {
             time += Time.deltaTime;
-            transform.rotation = Quaternion.Lerp(startRotation, endRotation, time / duration);
+            float t = time / halfDuration;
+            transform.rotation = Quaternion.Lerp(startRotation, midRotation, t);
             yield return null;
         }
 
+        // 중간 지점에서 앞면과 뒷면을 전환
         IsFaceUp = !IsFaceUp;
         cardBack.SetActive(!IsFaceUp);
         cardFront.SetActive(IsFaceUp);
 
-        transform.rotation = startRotation; // Reset rotation after flip
+        // 나머지 절반 회전: 카드가 완전히 뒤집히도록 함
+        time = 0f;
+        while (time < halfDuration)
+        {
+            time += Time.deltaTime;
+            float t = time / halfDuration;
+            transform.rotation = Quaternion.Lerp(midRotation, endRotation, t);
+            yield return null;
+        }
+
+        // 회전 완료 후 회전 상태를 최종적으로 설정
+        transform.rotation = startRotation * Quaternion.Euler(0, 180f, 0);
+
+        // 카드가 이미 뒤집힌 상태라면 Z축 위치를 원래대로 복원
+        if (!IsFaceUp)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1.5f);
+        }
+
         isFlipping = false;
     }
+
+
 
     public void RemoveCard()
     {

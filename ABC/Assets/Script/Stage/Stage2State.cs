@@ -15,5 +15,5 @@ public class Stage2State : IStageState
 
     public int GetCardCount() { return 8; }
     public int GetRowLength() { return 4; }
-    public float GetTimeLimit() { return 45f; } // 45초 제한 시간 예시
+    public float GetTimeLimit() { return 30f; }
 }

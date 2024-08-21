@@ -5,18 +5,18 @@ public class ScoreManager : IScoreManager
     private int currentScore;
     private int highScore;
 
-    private const string HighScoreKey = "HighScore"; // PlayerPrefs¿¡¼­ »ç¿ëÇÒ Å°
+    private const string HighScoreKey = "HighScore"; // PlayerPrefsì—ì„œ ì‚¬ìš©í•  í‚¤
 
     public ScoreManager()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã ÃÖ°íÁ¡¼ö¸¦ ·Îµå
+        // ê²Œì„ ì‹œì‘ ì‹œ ìµœê³ ì ìˆ˜ë¥¼ ë¡œë“œ
         highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
     }
 
     public void AddScore(int score)
     {
         currentScore += score;
-        // ÃÖ°íÁ¡¼ö¸¦ °»½ÅÇß´ÂÁö È®ÀÎ
+        // ìµœê³ ì ìˆ˜ë¥¼ ê°±ì‹ í–ˆëŠ”ì§€ í™•ì¸
         if (currentScore > highScore)
         {
             highScore = currentScore;
@@ -41,7 +41,7 @@ public class ScoreManager : IScoreManager
 
     private void SaveHighScore()
     {
-        // ÃÖ°íÁ¡¼ö¸¦ PlayerPrefs¿¡ ÀúÀå
+        // ìµœê³ ì ìˆ˜ë¥¼ PlayerPrefsì— ì €ì¥
         PlayerPrefs.SetInt(HighScoreKey, highScore);
         PlayerPrefs.Save();
     }

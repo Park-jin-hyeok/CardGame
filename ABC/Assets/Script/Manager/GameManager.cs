@@ -1,182 +1,3 @@
-/*
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
-public class GameManager : MonoBehaviour
-{
-    public GameObject cardPrefab; // Reference to your card prefab 
-
-    private List<Card> cardList = new List<Card>();
-    private List<Card> flippedCards = new List<Card>();
-
-    private StageManager stageManager; // StageManager¿¡ ´ëÇÑ ÂüÁ¶
-
-    void Start()
-    {
-        // StageManager ÀÎ½ºÅÏ½º °¡Á®¿À±â
-        stageManager = StageManager.Instance;
-
-        if (stageManager == null)
-        {
-            Debug.LogError("StageManager instance not found!");
-            return;
-        }
-
-        Card.OnCardClicked += HandleCardClicked;
-        MouseInputManager.OnMouseClicked += HandleMouseClick;
-
-        SetupStage();
-    }
-
-    private void SetupStage()
-    {
-        int cardCount = stageManager.GetCardCountForStage();
-        int rowLength = stageManager.GetRowLengthForStage();
-        float cardSpacing = 1.5f;
-
-        int cardTypes = cardCount / 2;
-
-        // Generate a list of unique card pairs
-        List<CardData> cardDatas = GenerateCardDatas(cardTypes);
-
-        // Calculate grid dimensions
-        float gridWidth = (rowLength - 1) * cardSpacing;
-        float gridHeight = (cardCount / rowLength - 1) * cardSpacing;
-
-        // Create cards based on cardDatas
-        for (int i = 0; i < cardCount; i++)
-        {
-            int row = i / rowLength;
-            int col = i % rowLength;
-
-            // Calculate centered position
-            float x = -gridWidth / 2 + col * cardSpacing;
-            float y = gridHeight / 2 - row * cardSpacing;
-            Vector3 spawnPosition = new Vector3(x, y, 0);
-
-            Card card = CardFactory.CreateCard(cardDatas[i].suit, cardDatas[i].rank, cardPrefab);
-            card.transform.position = spawnPosition;
-            cardList.Add(card);
-        }
-    }
-
-    private List<CardData> GenerateCardDatas(int cardTypes)
-    {
-        List<CardData> cardDatas = new List<CardData>();
-        List<int> usedCards = new List<int>();
-
-        for (int i = 0; i < cardTypes; i++)
-        {
-            int cardIndex;
-            do
-            {
-                cardIndex = Random.Range(1, 11); // Adjust range as needed
-            } while (usedCards.Contains(cardIndex));
-
-            usedCards.Add(cardIndex);
-
-            // Generate random suit
-            Suit suit = (Suit)Random.Range(0, 4);
-
-            // Create two cards with the same suit and rank
-            cardDatas.Add(new CardData { suit = suit, rank = cardIndex });
-            cardDatas.Add(new CardData { suit = suit, rank = cardIndex });
-        }
-
-        // Shuffle the cardDatas
-        cardDatas = cardDatas.OrderBy(x => Random.value).ToList();
-
-        return cardDatas;
-    }
-
-    private void HandleCardClicked(Card clickedCard)
-    {
-        if (this == null) return; // GameManager°¡ À¯È¿ÇÑÁö È®ÀÎ
-
-        // Check if the card is already flipped
-        if (flippedCards.Contains(clickedCard) || flippedCards.Count > 1)
-            return;
-
-        if (!clickedCard.IsFaceUp)
-        {
-            // Face down
-            clickedCard.FlipCard();
-            flippedCards.Add(clickedCard);
-            Debug.Log($"Card Revealed FlipCardNum: {flippedCards.Count}");
-        }
-        else
-        {
-            return;
-        }
-
-        if (flippedCards.Count == 2)
-        {
-            // ÄÚ·çÆ¾ ½ÃÀÛ Àü¿¡ GameManager°¡ ÆÄ±«µÇÁö ¾Ê¾Ò´ÂÁö È®ÀÎ
-            if (this != null)
-            {
-                StartCoroutine(CheckForMatch());
-            }
-        }
-    }
-
-    private IEnumerator CheckForMatch()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        if (flippedCards[0].Rank == flippedCards[1].Rank)
-        {
-            Debug.Log("Match!");
-            flippedCards.Clear();
-
-            if (AllCardsMatched())
-            {
-                stageManager.OnStageComplete(); // ½ºÅ×ÀÌÁö ¿Ï·á¸¦ StageManager¿¡ ¾Ë¸²
-            }
-        }
-        else
-        {
-            Debug.Log("Mismatch!");
-            flippedCards[0].FlipCard();
-            flippedCards[1].FlipCard();
-            flippedCards.Clear();
-        }
-    }
-
-    private bool AllCardsMatched()
-    {
-        foreach (var card in cardList)
-        {
-            if (!card.IsFaceUp)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void HandleMouseClick(Vector3 position)
-    {
-        if (this == null) return; // GameManager°¡ À¯È¿ÇÑÁö È®ÀÎ
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(position);
-    }
-
-    private void OnDestroy()
-    {
-        // ÀÌº¥Æ® ÇÚµé·¯ Á¦°Å
-        Card.OnCardClicked -= HandleCardClicked;
-        MouseInputManager.OnMouseClicked -= HandleMouseClick;
-    }
-}
-
-public struct CardData
-{
-    public Suit suit;
-    public int rank;
-}
-*/
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -191,12 +12,14 @@ public struct CardData
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
-    public AudioSource audioSource; // AudioSource ÄÄÆ÷³ÍÆ®
-    public AudioClip cardFlipSound; // Ä«µå µÚÁı±â »ç¿îµå
+    public AudioSource audioSource; // AudioSource ì»´í¬ë„ŒíŠ¸
+    public AudioClip cardFlipSound; // ì¹´ë“œ ë’¤ì§‘ê¸° ì‚¬ìš´ë“œ
     public AudioClip timerSound;
+    public AudioClip correctSound;
 
     private List<Card> cardList = new List<Card>();
     private List<Card> flippedCards = new List<Card>();
+    private int consecutiveMatches = 0; // ì—°ì†ìœ¼ë¡œ ë§ì¶˜ íšŸìˆ˜ë¥¼ ì¶”ì 
 
     private StageManager stageManager;
     private ISoundManager soundManager;
@@ -211,13 +34,24 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // SoundManager ÃÊ±âÈ­
-        soundManager = new SoundManager(audioSource, cardFlipSound, timerSound);
+        // SoundManager ì´ˆê¸°í™”
+        soundManager = new SoundManager(audioSource, cardFlipSound, timerSound, correctSound);
 
         Card.OnCardClicked += HandleCardClicked;
         MouseInputManager.OnMouseClicked += HandleMouseClick;
 
         SetupStage();
+    }
+
+    public void ResetGame()
+    {
+        // ì¹´ë“œ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
+        cardList.Clear();
+        flippedCards.Clear();
+
+        // í•„ìš”í•œ ê²½ìš° ì¶”ê°€ì ì¸ ìƒíƒœ ì´ˆê¸°í™”
+        consecutiveMatches = 0;
+        soundManager?.StopTimerSound();
     }
 
     private void SetupStage()
@@ -226,14 +60,15 @@ public class GameManager : MonoBehaviour
 
         int cardCount = stageManager.GetCardCountForStage();
         int rowLength = stageManager.GetRowLengthForStage();
-        float cardSpacing = 1.5f;
+        float cardSpacing = 2.5f;
 
         int cardTypes = cardCount / 2;
 
         List<CardData> cardDatas = GenerateCardDatas(cardTypes);
 
         float gridWidth = (rowLength - 1) * cardSpacing;
-        float gridHeight = (cardCount / rowLength - 1) * cardSpacing;
+        int rowCount = Mathf.CeilToInt((float)cardCount / rowLength); // í–‰ ìˆ˜ ê³„ì‚°
+        float gridHeight = (rowCount - 1) * cardSpacing * 1f; // ì¹´ë“œ ê°„ê²© ì¡°ì • (1.5ëŠ” ì„¸ë¡œ ê°„ê²©ì˜ ë°°ìˆ˜)
 
         for (int i = 0; i < cardCount; i++)
         {
@@ -241,7 +76,8 @@ public class GameManager : MonoBehaviour
             int col = i % rowLength;
 
             float x = -gridWidth / 2 + col * cardSpacing;
-            float y = gridHeight / 2 - row * cardSpacing;
+            float y = gridHeight / 2 - row * cardSpacing * 1.5f; // ì¤‘ì•™ ì •ë ¬ì„ ìœ„í•´ ê³„ì‚°
+
             Vector3 spawnPosition = new Vector3(x, y, 0);
 
             Card card = CardFactory.CreateCard(cardDatas[i].suit, cardDatas[i].rank, cardPrefab);
@@ -249,6 +85,7 @@ public class GameManager : MonoBehaviour
             cardList.Add(card);
         }
     }
+
 
     private List<CardData> GenerateCardDatas(int cardTypes)
     {
@@ -285,7 +122,7 @@ public class GameManager : MonoBehaviour
 
         if (!clickedCard.IsFaceUp)
         {
-            // Ä«µå µÚÁı±â ¼Ò¸® Àç»ı
+            // ì¹´ë“œ ë’¤ì§‘ê¸° ì†Œë¦¬ ì¬ìƒ
             soundManager.PlayCardFlipSound();
 
             clickedCard.FlipCard();
@@ -312,18 +149,27 @@ public class GameManager : MonoBehaviour
         if (flippedCards[0].Rank == flippedCards[1].Rank && flippedCards[0].Suit == flippedCards[1].Suit)
         {
             Debug.Log("Match!");
+
+            soundManager.PlayCorrectSound();
+
+            Vector3 targetPosition = new Vector3(-10f, 4.5f, 1f); // ì¹´ë“œë“¤ì´ ëª¨ì¼ ìœ„ì¹˜
+            float moveDuration = 0.2f; // ì¹´ë“œê°€ ì´ë™í•˜ëŠ” ë° ê±¸ë¦¬ëŠ” ì‹œê°„
+
             foreach (var card in flippedCards)
             {
                 cardList.Remove(card);
-                card.RemoveCard();
+                StartCoroutine(MoveCardToPosition(card, targetPosition, moveDuration));
             }
 
             flippedCards.Clear();
 
-            StageManager.Instance.AddScore(100);
+            consecutiveMatches++; // ì—°ì† ë§ì¶¤ íšŸìˆ˜ ì¦ê°€
+            int scoreToAdd = 100 * (int)Mathf.Pow(3, consecutiveMatches - 1); // ì—°ì† íšŸìˆ˜ì— ë”°ë¼ 3ë°°ìˆ˜ ì¦ê°€
+            StageManager.Instance.AddScore(scoreToAdd);
 
             if (AllCardsMatched())
             {
+                soundManager.PlayCorrectSound();
                 soundManager.StopTimerSound();
                 StageManager.Instance.OnStageComplete();
             }
@@ -334,7 +180,33 @@ public class GameManager : MonoBehaviour
             flippedCards[0].FlipCard();
             flippedCards[1].FlipCard();
             flippedCards.Clear();
+
+            consecutiveMatches = 0; // ë§ì¶”ì§€ ëª»í–ˆì„ ê²½ìš° ì—°ì† ë§ì¶¤ íšŸìˆ˜ ì´ˆê¸°í™”
         }
+    }
+
+    private IEnumerator MoveCardToPosition(Card card, Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = card.transform.position;
+        Quaternion startRotation = card.transform.rotation;
+        Quaternion targetRotation = Quaternion.Euler(0, 0, Random.Range(0, 360f)); // Yì¶• íšŒì „ì„ ëœë¤ìœ¼ë¡œ ì„¤ì •
+
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            // ì¹´ë“œ ìœ„ì¹˜ì™€ íšŒì „ì„ ë™ì‹œì— ë³´ê°„
+            card.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            card.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+
+            yield return null;
+        }
+
+        // ìµœì¢…ì ìœ¼ë¡œ íƒ€ê²Ÿ ìœ„ì¹˜ì™€ íšŒì „ ìƒíƒœì— ì •í™•íˆ ë§ì¶”ê¸°
+        card.transform.position = targetPosition;
+        card.transform.rotation = targetRotation;
     }
 
     private bool AllCardsMatched()
