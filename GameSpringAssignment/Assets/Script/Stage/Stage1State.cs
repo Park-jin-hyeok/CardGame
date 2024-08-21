@@ -14,5 +14,5 @@ public class Stage1State : IStageState
 
     public int GetCardCount() { return 4; }
     public int GetRowLength() { return 2; }
-    public float GetTimeLimit() { return 30f; }
+    public float GetTimeLimit() { return 10f; }
 }
